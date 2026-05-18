@@ -1,0 +1,11 @@
+logging:
+  level:
+    root: ${ROOT_LOGGING_LEVEL:info}
+
+spring:
+  datasource:
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres}
+  liquibase:
+    change-log: classpath:db/migration/db.changelog-master.yml

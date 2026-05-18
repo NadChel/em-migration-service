@@ -1,0 +1,116 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: zolotarevsa
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: "CREATE TYPE CARD_STATUS AS ENUM ('ACTIVE', 'BLOCKED', 'EXPIRED');"
+        - sql:
+            dbms: postgresql
+            sql: "CREATE TYPE REQUEST_STATUS AS ENUM ('PENDING', 'APPROVED', 'REJECTED');"
+        - createTable:
+            tableName: "user"
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_user_role_user
+                    referencedTableName: "user"
+                    referencedColumnNames: id
+              - column:
+                  name: role_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_user_role_role
+                    referencedTableName: role
+                    referencedColumnNames: id
+        - createTable:
+            tableName: card
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: number
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: status
+                  type: CARD_STATUS
+              - column:
+                  name: balance
+                  type: BIGINT
+              - column:
+                  name: expiration_date
+                  type: DATE
+              - column:
+                  name: owner_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_card_user
+                    referencedTableName: "user"
+                    referencedColumnNames: id
+        - createTable:
+            tableName: card_block_request
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status
+                  type: REQUEST_STATUS
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_card_block_request_card
+                    referencedTableName: card
+                    referencedColumnNames: id
+                    deleteCascade: true
